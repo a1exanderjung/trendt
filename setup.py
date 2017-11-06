@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import glob
 import os
 
@@ -10,7 +10,7 @@ from trendt import __version__, __description__, __program__
 setup(
     name = __program__,
     version = __version__,
-    packages = [__program__],
+    packages = find_packages(),
     description = __description__,
     url = 'https://git.compsoc.lancs.ac.uk/a.jung/trendy-t',
     author = 'Alexander Jung',
@@ -22,5 +22,6 @@ setup(
         """.format(program = __program__),
     keywords = [],
     tests_require = ['pytest', 'coveralls'],
-    zip_safe = False
+    zip_safe = False,
+    install_requires = required
 )
