@@ -51,9 +51,17 @@ class trendt:
             default=None
         )
         self.parser.add_argument(
+            '-g',
+            '--granularity',
+            help='specify the bin size or granularity of results',
+            default='day',
+            type=str,
+            options=['day', 'week', 'month', 'year']
+        )
+        self.parser.add_argument(
             '-o',
             '--output',
-            help='Specify an output folder, default is ~/.trendt/',
+            help='specify an output folder, default is ~/.trendt/',
             default='~/.trendt/',
             type=str
         )
