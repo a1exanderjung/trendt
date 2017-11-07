@@ -89,11 +89,11 @@ class trendt:
         # Load available APIs
         self.load_apis()
 
-        # Parse arguments
-        self.args = self.parser.parse_args(_args)
-
         # Stop the spinner, initialising is done
         self.spinner.stop()
+
+        # Parse arguments
+        self.args = self.parser.parse_args(_args)
 
     # Search based on keywords
     def search(self, _keywords=None, _exclude=None, _only=None, _from=None, _to=None):
