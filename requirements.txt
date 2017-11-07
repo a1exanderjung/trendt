@@ -1,3 +1,6 @@
 # Required modules
 dotenv
 halo
+logging
+pychalk
+requests
