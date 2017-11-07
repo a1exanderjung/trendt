@@ -3,6 +3,7 @@ from chalk import log
 from halo import Halo
 from . import __program__, __description__
 from .apis import __all__ as __apis__
+from .apis.api import NoKeywordError, MissingOAuthToken
 from .apis import *
 
 # Trend/t
@@ -10,7 +11,7 @@ from .apis import *
 # A "simple" program
 class trendt:
     available_apis = []
-    dateformat = 'dd/mm/yyyy'
+    dateformat = 'yyyy-mm-dd'
     verbose = False
     parser = None
     spiner = None
@@ -21,7 +22,7 @@ class trendt:
     def __init__(self, _args):
         # Initialise logging
         self.log = logging.getLogger(__name__)
-        # self.log.addHandler(log.ChalkHander())
+        self.log.addHandler(log.ChalkHandler())
 
         # Pretty spinners!
         self.spinner = Halo(text='Initialising...', spinner='dots')
@@ -87,34 +88,18 @@ class trendt:
         )
 
         # Load available APIs
+        # We do this first as each api contains sub commands and flags
         self.load_apis()
 
         # Stop the spinner, initialising is done
         self.spinner.stop()
 
         # Parse arguments
-        self.args = self.parser.parse_args(_args)
-
-    # Search based on keywords
-    def search(self, _keywords=None, _exclude=None, _only=None, _from=None, _to=None):
-        # Assign key-values
-        args = vars(self.args)
-
-        # Lets fill in the gaps
-        if _keywords is None:
-            _keywords = args['keywords']
-        if _exclude is None:
-            _exclude = args['exclude']
-        if _only is None:
-            _only = args['only']
-        if _from is None:
-            _from = args['from']
-        if _to is None:
-            _to = args['to']
-
-        # Parse date format
-        if _from is not None or _to is not None:
-            pass
+        self.args = vars(self.parser.parse_args(_args))
+        _exclude = self.args['exclude']
+        _only = self.args['only']
+        _from = self.args['from']
+        _to = self.args['to']
 
         # This if-statement is mutually exclusive by argparse
         if _exclude is not None and len(_exclude) > 0:
@@ -127,9 +112,21 @@ class trendt:
                 _only: _api
             }
 
-        # Lets do this search!
+        # Parse date format
+        if _from is not None or _to is not None:
+            pass
+
+    # Search based on keywords
+    def search(self):
         for api in self.available_apis:
-            self.available_apis[api].search(_keywords, _from, _to, 0)
+            try:
+                self.available_apis[api].search(
+                    _keywords = self.args['keywords'],
+                    _from = self.args['from'],
+                    _to = self.args['to']
+                )
+            except (MissingOAuthToken, NoKeywordError, NotImplementedError) as err:
+                self.log.error(err.message)
 
     # Load apis
     def load_apis(self):
@@ -140,7 +137,11 @@ class trendt:
             _module = globals()[api]
             _class = getattr(_module, api)
             _apis[api] = _class()
-            _apis[api].init(self.args, self.parser, self.verbose)
+            _apis[api].init(
+                _args = self.args,
+                _parser = self.parser,
+                _verbose = self.verbose
+            )
 
         # Re assign
         self.available_apis = _apis
@@ -163,9 +164,9 @@ class trendt:
 def main(args = sys.argv[1:]):
     t = trendt(args)
 
-    if t.args.keywords:
+    if t.args['keywords']:
         t.search()
-    elif t.args.list_apis:
+    elif t.args['list_apis']:
         t.list_apis()
     else:
         t.print_help()
