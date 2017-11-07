@@ -140,7 +140,7 @@ class trendt:
             _module = globals()[api]
             _class = getattr(_module, api)
             _apis[api] = _class()
-            _apis[api].init(self.args, self.parser)
+            _apis[api].init(self.args, self.parser, self.verbose)
 
         # Re assign
         self.available_apis = _apis

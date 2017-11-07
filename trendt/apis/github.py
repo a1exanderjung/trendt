@@ -7,7 +7,7 @@ class github(api):
     oauth_token = None
 
     # Initialise the GitHub API
-    def init(self, _args=None, _parser=None):
+    def init(self, _args=None, _parser=None, _verbose=False):
         _parser.add_argument(
             '--github-oauth-token',
             help='An OAuth token to be used against GitHub\'s API',

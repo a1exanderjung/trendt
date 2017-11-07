@@ -1,5 +1,5 @@
 class api:
-    def init(self, _args=None, _parser=None):
+    def init(self, _args=None, _parser=None, _verbose=False):
         raise NotImplementedError()
 
     def search(self, keywords=None, offset=0):
