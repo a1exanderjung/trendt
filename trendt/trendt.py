@@ -51,6 +51,15 @@ class trendt:
             default=None
         )
         self.parser.add_argument(
+            '-o',
+            '--output',
+            help='Specify an output folder, default is ~/.trendt/',
+            default='~/.trendt/',
+            type=str
+        )
+
+        # Program functions
+        self.parser.add_argument(
             '--list-apis',
             help='list the available APIs',
             action='store_true'
