@@ -1,7 +1,6 @@
 import sys, logging, argparse
 from chalk import log
 from halo import Halo
-from os.path import join, dirname
 from . import __program__, __description__
 from .apis import __all__ as __apis__
 from .apis import *
@@ -11,7 +10,6 @@ from .apis import *
 # A "simple" program
 class trendt:
     available_apis = []
-    enabled_apis = []
     dateformat = 'dd/mm/yyyy'
     verbose = False
     parser = None
@@ -30,8 +28,6 @@ class trendt:
         self.spinner.start()
 
         # Actual useful program stuff
-        self.args = _args
-
         self.available_apis = __apis__
 
         # Create the main argument parser
@@ -94,65 +90,60 @@ class trendt:
         self.load_apis()
 
         # Parse arguments
-        self.args = self.parser.parse_args(self.args)
+        self.args = self.parser.parse_args(_args)
 
+        # Stop the spinner, initialising is done
         self.spinner.stop()
 
-        # self.be_verbose(args.verbose)
-
-    # Search based on state
-    def search(self):
-        self.search(
-            self.args['keywords'],
-            self.args['exclude'],
-            self.args['only'],
-            self.args['from'],
-            self.args['to']
-        )
-
     # Search based on keywords
-    def search(self, _keywords, _exclude=[], _only=None, _from=None, _to=None):
-        # Load .env
-        dotenv_path = join(dirname(__file__), '.env')
+    def search(self, _keywords=None, _exclude=None, _only=None, _from=None, _to=None):
+        # Assign key-values
+        args = vars(self.args)
+
+        # Lets fill in the gaps
+        if _keywords is None:
+            _keywords = args['keywords']
+        if _exclude is None:
+            _exclude = args['exclude']
+        if _only is None:
+            _only = args['only']
+        if _from is None:
+            _from = args['from']
+        if _to is None:
+            _to = args['to']
 
         # Parse date format
         if _from is not None or _to is not None:
             pass
 
-        # Load APIs based on preference
-        self.load_apis(_exclude, _only)
+        # This if-statement is mutually exclusive by argparse
+        if _exclude is not None and len(_exclude) > 0:
+            for api in _exclude:
+                del self.available_apis[api]
+
+        elif _only is not None and _only in self.available_apis:
+            _api = self.available_apis[_only]
+            self.available_apis = {
+                _only: _api
+            }
 
         # Lets do this search!
-        for api in self.search_apis:
-            pass
+        for api in self.available_apis:
+            self.available_apis[api].search(_keywords, _from, _to, 0)
 
     # Load apis
     def load_apis(self):
-        __apis = {}
+        _apis = {}
 
         # Iterate through all available apis and instantiate
         for api in self.available_apis:
-            __module = globals()[api]
-            __class = getattr(__module, api)
-            __apis[api] = __class()
-            __apis[api].init(self.args, self.parser)
+            _module = globals()[api]
+            _class = getattr(_module, api)
+            _apis[api] = _class()
+            _apis[api].init(self.args, self.parser)
 
         # Re assign
-        self.available_apis = __apis
-
-    # Dynamically load available apis based on user preference
-    def use_apis(self, _exclude=[], _only=None):
-        apis = self.apis
-
-        if _exclude is not None and len(_exclude) > 0:
-            pass
-
-        elif _only is not None:
-            pass
-
-        for api in self.apis:
-            print('.apis.' + api)
-            # self.apis[api] = __import__('.apis.' + api)
+        self.available_apis = _apis
 
     # List all the available APIs
     def list_apis(self):
