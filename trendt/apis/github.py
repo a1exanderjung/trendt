@@ -28,12 +28,6 @@ class github(api):
             type=str
         )
 
-        self.parser.add_argument(
-            '--save-commit-message',
-            help='Include the commit message in the output',
-            action='store_true'
-        )
-
     # Initialise the GitHub API
     def init(self):
         super(github, self).init()
