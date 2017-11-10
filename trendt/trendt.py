@@ -1,9 +1,10 @@
 import sys, logging, argparse
+from dateutil.parser import parse
 from chalk import log
 from halo import Halo
 from . import __program__, __description__
 from .apis import __all__ as __apis__
-from .apis.api import NoKeywordError, MissingOAuthToken
+from .apis.api import output_dir, date_format, NoKeywordError, MissingOAuthToken
 from .apis import *
 
 # Trend/t
@@ -11,7 +12,6 @@ from .apis import *
 # A "simple" program
 class trendt:
     available_apis = []
-    dateformat = 'yyyy-mm-dd'
     verbose = False
     parser = None
     spiner = None
@@ -25,7 +25,10 @@ class trendt:
         self.log.addHandler(log.ChalkHandler())
 
         # Pretty spinners!
-        self.spinner = Halo(text='Initialising...', spinner='dots')
+        self.spinner = Halo(
+            text = 'Initialising...',
+            spinner = 'dots'
+        )
         self.spinner.start()
 
         # Actual useful program stuff
@@ -40,45 +43,37 @@ class trendt:
         # Common program arguments
         self.parser.add_argument(
             '-f', '--from',
-            help='set the start date of the search in ' + self.dateformat + ' format',
-            type=str,
-            default=None
+            help = 'set the start date of the search in %s format' % date_format,
+            type = str,
+            default = None
         )
         self.parser.add_argument(
             '-t', '--to',
-            help='set the end date of the search in ' + self.dateformat + ' format',
-            type=str,
-            default=None
-        )
-        self.parser.add_argument(
-            '-g',
-            '--granularity',
-            help='specify the bin size or granularity of results',
-            default='day',
-            type=str,
-            options=['day', 'week', 'month', 'year']
+            help = 'set the end date of the search in %s format' % date_format,
+            type = str,
+            default = None
         )
         self.parser.add_argument(
             '-o',
             '--output',
-            help='specify an output folder, default is ~/.trendt/',
-            default='~/.trendt/',
-            type=str
+            help = 'specify an output folder, default is %s' % output_dir,
+            default = output_dir,
+            type = str
         )
 
         # Program functions
         self.parser.add_argument(
             '--list-apis',
-            help='list the available APIs',
-            action='store_true'
+            help = 'list the available APIs',
+            action = 'store_true'
         )
 
         # General program functionality (or positional arguments)
         self.parser.add_argument(
             'keywords',
-            help='specific keywords to search, comma seperated for multiple',
-            type=str,
-            nargs='?'
+            help = 'specific keywords to search, comma seperated for multiple',
+            type = str,
+            nargs = '?'
         )
 
         # Allow --exclude and --only API options, but not together.
@@ -100,19 +95,20 @@ class trendt:
         self.parser.add_argument(
             '-v',
             '--verbose',
-            help='be verbose',
-            action='store_true'
+            help = 'be verbose',
+            action = 'store_true'
         )
 
-        # Load available APIs
+        # Register available APIs
         # We do this first as each api contains sub commands and flags
-        self.load_apis()
+        self.register_apis()
 
         # Stop the spinner, initialising is done
         self.spinner.stop()
 
         # Parse arguments
         self.args = vars(self.parser.parse_args(_args))
+        self.verbose = self.args['verbose']
         _exclude = self.args['exclude']
         _only = self.args['only']
         _from = self.args['from']
@@ -130,8 +126,18 @@ class trendt:
             }
 
         # Parse date format
-        if _from is not None or _to is not None:
-            pass
+        if _from is not None:
+            self.args['_from'] = parse(_from)
+        else:
+            self.args['_from'] = None
+
+        if _to is not None:
+            self.args['_to'] = parse(_to)
+        else:
+            self.args['_to'] = None
+
+        # Initialise available apis
+        self.init_apis()
 
     # Search based on keywords
     def search(self):
@@ -139,29 +145,34 @@ class trendt:
             try:
                 self.available_apis[api].search(
                     _keywords = self.args['keywords'],
-                    _from = self.args['from'],
-                    _to = self.args['to']
+                    _from = self.args['_from'],
+                    _to = self.args['_to']
                 )
             except (MissingOAuthToken, NoKeywordError, NotImplementedError) as err:
                 self.log.error(err.message)
 
-    # Load apis
-    def load_apis(self):
+    # Register an API
+    def register_apis(self):
         _apis = {}
 
-        # Iterate through all available apis and instantiate
+        # Iterate through all available apis and add parser
         for api in self.available_apis:
             _module = globals()[api]
             _class = getattr(_module, api)
             _apis[api] = _class()
-            _apis[api].init(
+            _apis[api].register(
                 _args = self.args,
-                _parser = self.parser,
-                _verbose = self.verbose
+                _parser = self.parser
             )
 
         # Re assign
         self.available_apis = _apis
+
+    # Initialise apis
+    def init_apis(self):
+        # Re-iterate through all available apis and instantiate
+        for api in self.available_apis:
+             self.available_apis[api].init()
 
     # List all the available APIs
     def list_apis(self):
