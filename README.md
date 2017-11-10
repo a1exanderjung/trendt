@@ -33,7 +33,6 @@ Once installed, running `trendt` or `trendt --help` will yield:
 usage: trendt [-h] [-f FROM] [-t TO] [-o OUTPUT] [--list-apis]
               [--exclude {github} | --only {github}] [-v]
               [--github-oauth-token GITHUB_OAUTH_TOKEN]
-              [--save-commit-message]
               [keywords]
 
 Trend/t: A simple tool to discover programming usage trends across major
@@ -48,15 +47,13 @@ optional arguments:
   -f FROM, --from FROM  set the start date of the search in yyyy-mm-dd format
   -t TO, --to TO        set the end date of the search in yyyy-mm-dd format
   -o OUTPUT, --output OUTPUT
-                        Specify an output folder, default is ~/.trendt/
+                        specify an output folder, default is ~/.trendt/
   --list-apis           list the available APIs
   --exclude {github}    exclude specific API from the search
   --only {github}       use only a specific API for the search
   -v, --verbose         be verbose
   --github-oauth-token GITHUB_OAUTH_TOKEN
                         Your OAuth token to be used against GitHub's API
-  --save-commit-message
-                        Include the commit message in the output
 ```
 
 ### APIs
