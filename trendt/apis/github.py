@@ -95,30 +95,31 @@ class github(api):
 
         # We've probably hit a rate limit
         if 'items' not in raw_data.keys():
-            reset_at = datetime.fromtimestamp(float(response.headers['X-RateLimit-Reset']))
+            if 'X-RateLimit-Reset' in response.headers:
+                reset_at = datetime.fromtimestamp(float(response.headers['X-RateLimit-Reset']))
 
-            # Wait until reset
-            diff = (reset_at - datetime.now()).total_seconds()
+                # Wait until reset
+                diff = (reset_at - datetime.now()).total_seconds()
 
-            if diff > 0:
-                # + 5 for good measure
-                diff = int(diff + 5)
-                countdown_text = 'Waiting %d seconds due to rate limiting...'
+                if diff > 0:
+                    # + 5 for good measure
+                    diff = int(diff + 5)
+                    countdown_text = 'Waiting %d seconds due to rate limiting...'
 
-                ratelimit = Halo(
-                    text = countdown_text % diff,
-                    spinner = 'dots'
-                )
-                ratelimit.start()
+                    ratelimit = Halo(
+                        text = countdown_text % diff,
+                        spinner = 'dots'
+                    )
+                    ratelimit.start()
 
-                for i in range(diff):
-                    ratelimit.text = countdown_text % (diff - i)
-                    try:
-                        time.sleep(1)
-                    except IOError:
-                        pass
+                    for i in range(diff):
+                        ratelimit.text = countdown_text % (diff - i)
+                        try:
+                            time.sleep(1)
+                        except IOError:
+                            pass
 
-                ratelimit.stop()
+                    ratelimit.stop()
 
             # Try again?
             response = self.go(_url, _params)
