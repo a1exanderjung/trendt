@@ -4,3 +4,5 @@ halo
 logging
 pychalk
 requests
+python-dateutil
+tqdm
