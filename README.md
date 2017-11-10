@@ -4,19 +4,7 @@ A simple tool to discover programming usage trends across major opensource platf
 
 ## Installation
 
-### Docker
-
-A [docker image](https://hub.docker.com/r/a1exanderjung/trendt) is available which contains the complete toolchain and preinstalled application which can be used once run.  The [`Dockerfile`](/Dockerfile) is available in this repository if you wish to build the image locally.  A [`Makefile`](/Makefile) has been provided with useful commands to speed up this process.
-
-To build and run docker image, simply run:
-
-```
-$ make start
-```
-
-### Manual installation
-
-If you wish to install this tool permenantly onto your system,
+To permenantly onto your system,
 
 1. Install `git` and ensure it is available on your platform `PATH`,
 2. Install `Python 2.7` and `pip`
