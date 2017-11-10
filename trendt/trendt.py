@@ -148,7 +148,7 @@ class trendt:
                     _from = self.args['_from'],
                     _to = self.args['_to']
                 )
-            except (MissingOAuthToken, NoKeywordError, NotImplementedError) as err:
+            except (MissingOAuthToken, NoKeywordError, NotImplementedError, KeyboardInterrupt, SystemExit) as err:
                 self.log.error(err.message)
 
     # Register an API
