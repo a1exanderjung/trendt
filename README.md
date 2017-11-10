@@ -1,14 +1,14 @@
 # Trend/t
 
-Trend/t: A simple tool to discover programming usage trends on GitHub over time.  It builds a raw output of accumulated usage over the defined period as both a time-usage graph and raw data samples for the related search keywords.
+Trend/t: A simple tool to discover programming usage trends on GitHub over time.  It builds an output of references to a particular set of keywords over a defined period of time.  This can be used to plot a time-usage graph.
 
 ## Installation
 
-To permenantly onto your system,
+To permenantly install `trendt` onto your system,
 
 1. Install `git` and ensure it is available on your platform `PATH`,
 2. Install `Python 2.7` and `pip`
-3. Clone and cd into directory and use python setup to install:
+3. Clone and `cd` into this repository and use `setup.py` to install:
   ```
   $ python setup.py install
   ```
@@ -45,10 +45,16 @@ optional arguments:
 
 ### APIs
 
-`trendt` makes use of various public APIs to perform its search and overall data aggregation.  However, in some instances, such as with GitHub, these APIs require authentication.  The following section describes additional parameters and measures.
+`trendt` makes use of public APIs to perform its search and overall data aggregation.  However, in some instances, such as with GitHub, these APIs require authentication.  The following section describes additional parameters and measures.
 
 #### GitHub
 
-You will need a [personal access token](https://github.com/settings/tokens/new) from GitHub which can be aquired from your settings page.  The only scopes required for `trendt` are those from "repo".
+Data made available by GitHub comes through their public APIs, particularly focusing on searching repository commit history for the keywords specified into `trendt` .
+
+To use `trendt` with GitHub, you will need a [personal access token](https://github.com/settings/tokens/new) from GitHub which can be aquired from your settings page.  The only scopes required for `trendt` are those from "repo".
 
 Once you have the OAuth token, you can initialise `trendt` with it by using the `--github-oauth-token` flag.
+
+## Motivation
+
+The purpose of this program is to substantiate claims of programming paradigms, software libraries, tools or conventions by popularity over time.  
