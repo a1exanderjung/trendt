@@ -41,7 +41,7 @@ class api(object):
         self.output_file = output_dir + self.name + '.csv'
 
         with open(self.output_file, 'w') as f:
-            f.write('data,references\n')
+            f.write('date,references\n')
 
     # Perform a search and parse results at offset
     def search(self, _keywords=None, _offset=0):
