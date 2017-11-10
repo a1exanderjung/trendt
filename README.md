@@ -23,8 +23,7 @@ usage: trendt [-h] [-f FROM] [-t TO] [-o OUTPUT] [--list-apis]
               [--github-oauth-token GITHUB_OAUTH_TOKEN]
               [keywords]
 
-Trend/t: A simple tool to discover programming usage trends across major
-opensource platforms and Q&A sites over time.
+Trend/t: A simple tool to discover programming usage trends on GitHub over time.
 
 positional arguments:
   keywords              specific keywords to search, comma seperated for
