@@ -1,6 +1,6 @@
 # Trend/t
 
-A simple tool to discover programming usage trends across major opensource platforms and Q&A sites over time.  It builds a raw output of accumulated usage over the defined period as both a time-usage graph and raw data samples for the related search keywords.
+Trend/t: A simple tool to discover programming usage trends on GitHub over time.  It builds a raw output of accumulated usage over the defined period as both a time-usage graph and raw data samples for the related search keywords.
 
 ## Installation
 
